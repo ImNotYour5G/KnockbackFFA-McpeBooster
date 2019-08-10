@@ -2,15 +2,12 @@
 
 namespace KnockbackFFA;
 
-use KnockbackFFA\checkLevel;
+use pocketmine\entity\EffectInstance;
 use pocketmine\plugin\PluginBase;
 use pocketmine\event\Listener;
-use pocketmine\Server;
-use pocketmine\utils\Config;
 use pocketmine\tile\Sign;
 use pocketmine\Player;
 use pocketmine\lang\BaseLang;
-use pocketmine\math\Vector3;
 use pocketmine\item\Item;
 use pocketmine\level\sound\ClickSound;
 use pocketmine\entity\Effect;
@@ -44,9 +41,11 @@ use pocketmine\network\mcpe\protocol\{
     AdventureSettingsPacket
 };
 
-class KnockbackFFA extends PluginBase implements Listener {
+class KnockbackFFA extends PluginBase implements Listener
+{
 
-    public function onEnable() {
+    public function onEnable()
+    {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
 
         $this->saveDefaultConfig();
@@ -74,10 +73,11 @@ class KnockbackFFA extends PluginBase implements Listener {
             $level->stopTime();
         }
 
-        $this->getServer()->getScheduler()->scheduleRepeatingTask(new checkLevel($this), 20);
+        $this->getScheduler()->scheduleRepeatingTask(new checkLevel($this), 20);
     }
 
-    public function onLoad() {
+    public function onLoad()
+    {
         $players = $this->getServer()->getOnlinePlayers();
         $time = time(date("H"), date("i"), date("s"));
         foreach ($players as $p) {
@@ -88,11 +88,13 @@ class KnockbackFFA extends PluginBase implements Listener {
         }
     }
 
-    public function getLanguage(): BaseLang {
+    public function getLanguage(): BaseLang
+    {
         return $this->baseLang;
     }
 
-    public function checkUpdate() {
+    public function checkUpdate()
+    {
         $arrContextOptions = array(
             "ssl" => array(
                 "verify_peer" => false,
@@ -142,7 +144,8 @@ class KnockbackFFA extends PluginBase implements Listener {
 
     #Events
 
-    public function onSignCreate(SignChangeEvent $event) {
+    public function onSignCreate(SignChangeEvent $event)
+    {
         if ($event->getPlayer()->hasPermission("knockbackffa.admin")) {
             if (strtolower($event->getLine(0)) == "knockbackffa") {
                 if (in_array($event->getLine(1), $this->arenas)) {
@@ -162,7 +165,8 @@ class KnockbackFFA extends PluginBase implements Listener {
         }
     }
 
-    public function onInteract(PlayerInteractEvent $event) {
+    public function onInteract(PlayerInteractEvent $event)
+    {
         $player = $event->getPlayer();
         $block = $event->getBlock();
         $tile = $player->getLevel()->getTile($block);
@@ -181,7 +185,8 @@ class KnockbackFFA extends PluginBase implements Listener {
         }
     }
 
-    public function onDamage(EntityDamageEvent $event) {
+    public function onDamage(EntityDamageEvent $event)
+    {
         if ($event->getEntity() instanceof Player) {
             $entity = $event->getEntity();
             $welt = $entity->getLevel()->getFolderName();
@@ -225,7 +230,8 @@ class KnockbackFFA extends PluginBase implements Listener {
         }
     }
 
-    public function onMove(PlayerMoveEvent $event) {
+    public function onMove(PlayerMoveEvent $event)
+    {
         $player = $event->getPlayer();
         $name = strtolower($player->getName());
         $welt = $player->getLevel()->getFolderName();
@@ -236,7 +242,8 @@ class KnockbackFFA extends PluginBase implements Listener {
         }
     }
 
-    public function onBreak(BlockBreakEvent $event) {
+    public function onBreak(BlockBreakEvent $event)
+    {
         $player = $event->getPlayer();
         $welt = $player->getLevel()->getFolderName();
         if (in_array($welt, $this->arenas)) {
@@ -244,7 +251,8 @@ class KnockbackFFA extends PluginBase implements Listener {
         }
     }
 
-    public function onPlace(BlockPlaceEvent $event) {
+    public function onPlace(BlockPlaceEvent $event)
+    {
         $player = $event->getPlayer();
         $welt = $player->getLevel()->getFolderName();
         if (in_array($welt, $this->arenas)) {
@@ -252,7 +260,8 @@ class KnockbackFFA extends PluginBase implements Listener {
         }
     }
 
-    public function onDrop(PlayerDropItemEvent $event) {
+    public function onDrop(PlayerDropItemEvent $event)
+    {
         $player = $event->getPlayer();
         $welt = $player->getLevel()->getFolderName();
         if (in_array($welt, $this->arenas)) {
@@ -260,7 +269,8 @@ class KnockbackFFA extends PluginBase implements Listener {
         }
     }
 
-    public function onExhaust(PlayerExhaustEvent $event) {
+    public function onExhaust(PlayerExhaustEvent $event)
+    {
         $player = $event->getPlayer();
         $welt = $player->getLevel()->getFolderName();
         if (in_array($welt, $this->arenas)) {
@@ -268,7 +278,8 @@ class KnockbackFFA extends PluginBase implements Listener {
         }
     }
 
-    public function onLevelChange(EntityLevelChangeEvent $event) {
+    public function onLevelChange(EntityLevelChangeEvent $event)
+    {
         $entity = $event->getEntity();
         if ($entity instanceof Player) {
             $player = $entity;
@@ -297,7 +308,8 @@ class KnockbackFFA extends PluginBase implements Listener {
         }
     }
 
-    public function onJoin(PlayerJoinEvent $event) {
+    public function onJoin(PlayerJoinEvent $event)
+    {
         $player = $event->getPlayer();
         $name = strtolower($player->getName());
         $this->lastDmg[$name] = "emp ty";
@@ -306,7 +318,8 @@ class KnockbackFFA extends PluginBase implements Listener {
         $this->updateSign();
     }
 
-    public function onQuit(PlayerQuitEvent $event) {
+    public function onQuit(PlayerQuitEvent $event)
+    {
         $this->updateSign();
     }
 
@@ -316,7 +329,8 @@ class KnockbackFFA extends PluginBase implements Listener {
      * @param $arena
      */
 
-    private function updateSign() {
+    private function updateSign()
+    {
         $lobby = $this->getServer()->getDefaultLevel();
         if ($this->getServer()->isLevelLoaded($lobby->getFolderName())) {
             foreach ($lobby->getTiles() as $tile) {
@@ -345,7 +359,8 @@ class KnockbackFFA extends PluginBase implements Listener {
      * @param $arena
      */
 
-    private function ArenaJoin(Player $player, string $arena) {
+    private function ArenaJoin(Player $player, string $arena)
+    {
         if (!$this->getServer()->isLevelLoaded($arena)) {
             $this->getServer()->loadLevel($arena);
         }
@@ -368,7 +383,8 @@ class KnockbackFFA extends PluginBase implements Listener {
      * @param Player $player
      */
 
-    private function PlayerRespawn(Player $player) {
+    private function PlayerRespawn(Player $player)
+    {
         $name = strtolower($player->getName());
         $time = time(date("H"), date("i"), date("s"));
         if ($this->lastRespawn[$name] < $time) {
@@ -417,35 +433,29 @@ class KnockbackFFA extends PluginBase implements Listener {
      * @param Player $player
      */
 
-    private function giveKit(Player $player) {
-        $waffe = 280;
+    private function giveKit(Player $player)
+    {
 
         $player->setHealth(20);
         $player->setFood(20);
-        $inv = $player->getInventory();
-        $inv->clearAll();
-        $item = Item::get($waffe);
-        
-        $enchantment = Enchantment::getEnchantment(12);
-        $level = 10;
-        $knockback = new EnchantmentInstance($enchantment, $level);
-        $item->addEnchantment($knockback);
 
-        $inv->setItem(0, $item);
-        $effect = Effect::getEffect(1);
-        $effect->setAmplifier(1)->setVisible(false)->setDuration(99999);
-        $player->addEffect($effect);
-        $level = $player->getLevel();
+        $player->getInventory()->clearAll();
+        $player->getArmorInventory()->clearAll();
 
-        $effect = Effect::getEffect(8);
-        $effect->setAmplifier(1)->setVisible(false)->setDuration(99999);
-        $player->addEffect($effect);
+        $stick = Item::get(280, 0, 1);
+        $stick->addEnchantment(new EnchantmentInstance(Enchantment::getEnchantment(12), 1));
+        $player->getInventory()->setItem(0, $stick);
+
+        $player->addEffect(new EffectInstance(Effect::getEffect(1), 99999, 1, false));
+        $player->addEffect(new EffectInstance(Effect::getEffect(8), 99999, 1, false));
+
         $player->getLevel()->addSound(new ClickSound($player));
     }
 
     #Task
 
-    public function checkLevelTask() {
+    public function checkLevelTask()
+    {
         $players = $this->getServer()->getOnlinePlayers();
         foreach ($players as $p) {
             $welt = $p->getLevel()->getFolderName();
@@ -459,7 +469,8 @@ class KnockbackFFA extends PluginBase implements Listener {
         }
     }
 
-    public function onCommand(CommandSender $sender, Command $command, $label, array $args): bool {
+    public function onCommand(CommandSender $sender, Command $command, $label, array $args): bool
+    {
         if (strtolower($command->getName()) === "knockbackffa" || strtolower($command->getName()) === "kbf") {
             if ($sender instanceof Player) {
                 $player = $sender;
