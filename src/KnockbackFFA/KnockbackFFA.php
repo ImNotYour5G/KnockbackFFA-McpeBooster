@@ -79,12 +79,10 @@ class KnockbackFFA extends PluginBase implements Listener
     public function onLoad()
     {
         $players = $this->getServer()->getOnlinePlayers();
-        $time = time(date("H"), date("i"), date("s"));
         foreach ($players as $p) {
             $name = strtolower($p->getName());
             $this->lastDmg[$name] = "emp ty";
             $this->lastKillstreak[$name] = 0;
-            $this->lastRespawn[$name] = $time;
         }
     }
 
@@ -314,7 +312,6 @@ class KnockbackFFA extends PluginBase implements Listener
         $name = strtolower($player->getName());
         $this->lastDmg[$name] = "emp ty";
         $this->lastKillstreak[$name] = 0;
-        $this->lastRespawn[$name] = time(date("H"), date("i"), date("s"));
         $this->updateSign();
     }
 
@@ -386,8 +383,6 @@ class KnockbackFFA extends PluginBase implements Listener
     private function PlayerRespawn(Player $player)
     {
         $name = strtolower($player->getName());
-        $time = time(date("H"), date("i"), date("s"));
-        if ($this->lastRespawn[$name] < $time) {
             $level = $player->getLevel();
             $player->teleport($level->getSafeSpawn());
 
@@ -423,8 +418,6 @@ class KnockbackFFA extends PluginBase implements Listener
             $this->giveKit($player);
             $this->lastDmg[$name] = "emp ty";
             $this->lastKillstreak[$name] = 0;
-            $this->lastRespawn[$name] = time(date("H"), date("i"), date("s") + 2);
-        }
     }
 
     #Kit
